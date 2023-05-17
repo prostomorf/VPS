@@ -1,33 +1,6 @@
-name: RDP1
-
-on: workflow_dispatch
-
-jobs:
-  build:
-
-    runs-on: windows-latest
-    timeout-minutes: 9999
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Copy NSSM & Ngrok to Windows Directory.
-      run: | 
-        copy nssm.exe C:\Windows\System32
-        copy ngrok.exe C:\Windows\System32
-    - name: Connect your NGROK account
-      run: .\ngrok.exe authtoken $Env:NGROK_AUTH_TOKEN
-      env:
-        NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-    - name: Make YML file for NGROK.
-      run: start NGROK-AP.bat
-    - name: Enable RDP Access.
-      run: | 
-        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server'-name "fDenyTSConnections" -Value 0
-        Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
-    - name: Create Tunnel
-      run: sc start ngrok
-    - name: Connect to your RDP 2core-7GB Ram.
-      run: cmd /c NGROK-CHECK.bat
-    - name: All Done! You can close Tab now! Maximum VM time:6h.
-      run: cmd /c loop.bat 
+@echo off
+tasklist | find /i "ngrok.exe" >Nul && goto check || echo "NGROK Services is not Running. One NGROK FREE Account/ 1 Tunnel, If u want Run more VM, Update new NGROK_AUTH_TOKEN into Settings> Secrets> Repository secrets then run workflow again. Your current workflow end shortly. If you still have questions contact: https://fb.com/404 " & ping 127.0.0.1 >Nul & ping 127.0.0.1 >Nul & exit
+:check
+ping 127.0.0.1 > nul
+cls
+goto check
